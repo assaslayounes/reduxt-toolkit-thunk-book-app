@@ -4,7 +4,7 @@ import BooksList from './BooksList';
 
 import './book.css';
 
-const PostContainer = () => {
+const BookContainer = () => {
   return (
     <Fragment>
       <hr className='my-5' />
@@ -20,4 +20,4 @@ const PostContainer = () => {
   );
 };
 
-export default PostContainer;
+export default BookContainer;

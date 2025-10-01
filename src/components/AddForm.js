@@ -19,7 +19,7 @@ const AddForm = () => {
             <textarea
               className='form-control'
               id='Description'
-              rows='3'
+              rows='5'
               required
             ></textarea>
           </div>
