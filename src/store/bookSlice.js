@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-const getBooks = createAsyncThunk("book/getBooks", async (_, thunkAPI) => {
-  
+export const getBooks = createAsyncThunk("book/getBooks", async (_, thunkAPI) => {
   try {
     const response = await fetch("http://localhost:3009/books");
     const data = await response.json();
@@ -16,18 +15,19 @@ const bookSlice = createSlice({
   name: "book",
   initialState: { book: null },
   reducers: {},
-  extraReducers: { 
-  [getBooks.pending]  : (state, action) => {
-    console.log("pending: ", action);
+  extraReducers: (builder) => {
+    builder
+      .addCase(getBooks.pending, (state, action) => {
+        console.log("pending: ", action);
+      })
+      .addCase(getBooks.fulfilled, (state, action) => {
+        console.log("fulfilled: ", action);
+        //state.book = action.payload;
+      })
+      .addCase(getBooks.rejected, (state, action) => {
+        console.log("rejected: ", action);
+      });
   },
-  [getBooks.fulfilled]: (state, action) => {
-    console.log("fulfilled: ", action);
-    //state.book = action.payload;
-  },
-  [getBooks.rejected] : (state, action) => {
-    console.log("rejected: ", action);
-  },
-}
 });
 
 export default bookSlice.reducer;

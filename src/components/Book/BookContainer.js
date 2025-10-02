@@ -1,10 +1,18 @@
-import React, { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
+import {useDispatch} from 'react-redux';
+import {getBooks} from '../../store/bookSlice';
 import BookInfo from './BookInfo';
 import BooksList from './BooksList';
 
 import './book.css';
 
 const BookContainer = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getBooks());
+  }, [dispatch]); 
+  
   return (
     <Fragment>
       <hr className='my-5' />
