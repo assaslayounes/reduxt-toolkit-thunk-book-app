@@ -1,27 +1,34 @@
-import { Fragment, useEffect } from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import {getBooks} from '../../store/bookSlice';
-import BookInfo from './BookInfo';
-import BooksList from './BooksList';
+import { Fragment, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getBooks, deleteBook } from "../../store/bookSlice";
+import BookInfo from "./BookInfo";
+import BooksList from "./BooksList";
 
-import './book.css';
+import "./book.css";
 
 const BookContainer = () => {
-  const {isLoading, book} = useSelector((state) => state.books);
+  const { isLoading, book } = useSelector((state) => state.books);
+  const { isLoggedIn } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getBooks());
-  }, [dispatch]); 
-  
+  }, [dispatch]);
+
   return (
     <Fragment>
-      <hr className='my-5' />
-      <div className='row'>
-        <div className='col'>
-          <BooksList isLoading={isLoading} books={book}  />
+      <hr className="my-5" />
+      <div className="row">
+        <div className="col">
+          <BooksList
+            isLoading={isLoading}
+            books={book}
+            isLoggedIn={isLoggedIn}
+            deleteBook={deleteBook}
+            dispatch={dispatch}
+          />
         </div>
-        <div className='col side-line'>
+        <div className="col side-line">
           <BookInfo />
         </div>
       </div>
