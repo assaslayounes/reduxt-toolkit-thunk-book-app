@@ -7,7 +7,7 @@ import BooksList from "./BooksList";
 import "./book.css";
 
 const BookContainer = () => {
-  const { isLoading, book } = useSelector((state) => state.books);
+  const { isLoading, book, bookInfo } = useSelector((state) => state.books);
   const { isLoggedIn } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
@@ -26,10 +26,11 @@ const BookContainer = () => {
             isLoggedIn={isLoggedIn}
             deleteBook={deleteBook}
             dispatch={dispatch}
+            getBookById={getBookById}
           />
         </div>
         <div className="col side-line">
-          <BookInfo />
+          <BookInfo bookInfo={bookInfo} />
         </div>
       </div>
     </Fragment>
