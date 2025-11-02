@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { logInsert } from './reportSlice';
 
 //getBooks
 export const getBooks = createAsyncThunk(
@@ -20,7 +21,7 @@ export const getBooks = createAsyncThunk(
 export const insertBook = createAsyncThunk(
   "book/insertBook",
   async (bookData, thunkAPI) => {
-    const { rejectWithValue, getState } = thunkAPI;
+    const { rejectWithValue, getState, dispatch } = thunkAPI;
     try {
       bookData.userName = getState().auth.name;
       const response = await fetch("http://localhost:3009/books", {
@@ -31,8 +32,10 @@ export const insertBook = createAsyncThunk(
         body: JSON.stringify(bookData),
       });
       const data = await response.json();
+      dispatch(logInsert({name:'insertBook',status:'success'}));
       return data;
     } catch (error) {
+      dispatch(logInsert({name:'insertBook',status:'failed'}));
       return rejectWithValue(error.message);
       //return thunkAPI.rejectWithValue("something went wrong");
     }
@@ -42,17 +45,38 @@ export const insertBook = createAsyncThunk(
 //DeleteBook
 export const deleteBook = createAsyncThunk(
   "book/deleteBook",
-  async (id, thunkAPI) => {
+  async (book, thunkAPI) => {
     const { rejectWithValue } = thunkAPI;
     try {
-       await fetch(`http://localhost:3009/books/${id}`, {
+       await fetch(`http://localhost:3009/books/${book.id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json; charset=UTF-8",
         },
       });
-      
-      return id;
+      // return book => action.payload= book , if : return id => action.payload=id
+      return book;
+    } catch (error) {
+      return rejectWithValue(error.message);
+      //return thunkAPI.rejectWithValue("something went wrong");
+    }
+  }
+);
+
+//getBookById
+export const getBookById = createAsyncThunk(
+  "book/getBookById",
+  async (book, thunkAPI) => {
+    const { rejectWithValue } = thunkAPI;
+    try {
+       await fetch(`http://localhost:3009/books/${book.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      });
+      // return book => action.payload= book , if : return id => action.payload=id
+      return book;
     } catch (error) {
       return rejectWithValue(error.message);
       //return thunkAPI.rejectWithValue("something went wrong");
@@ -62,7 +86,7 @@ export const deleteBook = createAsyncThunk(
 
 const bookSlice = createSlice({
   name: "book",
-  initialState: { book: [], isLoading: false, error: null },
+  initialState: { book: [], isLoading: false, error: null, bookInfo: null },
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -95,10 +119,21 @@ const bookSlice = createSlice({
       })
       .addCase(deleteBook.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.book = state.book.filter((book) => book.id !== action.payload);
+        state.book = state.book.filter((book) => book.id !== action.payload.id);
         console.log(action.payload);
       })
       .addCase(deleteBook.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      }).addCase(getBookById.pending, (state, action) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getBookById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.bookInfo = action.payload;
+      })
+      .addCase(getBookById.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
